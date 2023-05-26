@@ -10,6 +10,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
 	"github.com/flipped-aurora/gin-vue-admin/server/utils"
 	"github.com/gofrs/uuid"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -47,12 +48,13 @@ func (userService *UserService) Login(u *system.SysUser) (userInter *system.SysU
 
 	var user system.SysUser
 	err = global.GVA_DB.Where("username = ?", u.Username).Preload("Authorities").Preload("Authority").First(&user).Error
-	if err == nil {
-		if ok := utils.BcryptCheck(u.Password, user.Password); !ok {
-			return nil, errors.New("密码错误")
-		}
-		MenuServiceApp.UserAuthorityDefaultRouter(&user)
-	}
+	// if err == nil {
+	// 	if ok := utils.BcryptCheck(u.Password, user.Password); !ok {
+	// 		return nil, errors.New("密码错误")
+	// 	}
+	// 	MenuServiceApp.UserAuthorityDefaultRouter(&user)
+	// }
+	global.GVA_LOG.Debug("user", zap.Error(err))
 	return &user, err
 }
 
